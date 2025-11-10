@@ -20,7 +20,7 @@ aws s3 mb s3://source-bucket-name
 aws s3 mb s3://destination-bucket-name
 
 
-🧠 Step 2: Create DynamoDB Table
+## 🧠 Step 2: Create DynamoDB Table
 aws dynamodb create-table \
   --table-name ImageMetadata \
   --attribute-definitions AttributeName=ImageID,AttributeType=S \
@@ -32,7 +32,7 @@ aws dynamodb create-table \
 
 ---
 
-🧩 Step 3: Lambda Function Code
+## 🧩 Step 3: Lambda Function Code
 
 Below is the Lambda function used to resize the image and store metadata in DynamoDB.
 
@@ -76,7 +76,7 @@ def lambda_handler(event, context):
  ![Lambda Function](screenshots/lambda-function-code.png)
 
 
-🧱 Step 4: Add AWS Precompiled Pillow Layer
+## 🧱 Step 4: Add AWS Precompiled Pillow Layer
 
 To handle image resizing, attach an AWS precompiled Pillow layer compatible with your Lambda runtime (e.g., Python 3.9).
 This ensures that your function has the required dependencies without packaging them manually.
@@ -90,14 +90,14 @@ You can download a Python 3.11 compatible Pillow layer from:
 https://github.com/keithrozario/Klayers
 ---
 
-⚙️ Step 5: Environment Variables Added
+## ⚙️ Step 5: Environment Variables Added
 
 aws lambda update-function-configuration \
   --function-name ImageResizer \
   --environment "Variables={DEST_BUCKET=<destination-bucket-name>}"
 ---
 
-🔐 Step 6: IAM Permissions
+## 🔐 Step 6: IAM Permissions
 
 Assign permissions that allow the Lambda function to read and write to S3 and put items in DynamoDB.
 
@@ -133,7 +133,7 @@ Example least-privilege policy:
 
 ---
 
-🧪 Step 7: Test the Pipeline
+## 🧪 Step 7: Test the Pipeline
 
 Upload an image to the source bucket.
 
@@ -163,7 +163,7 @@ DynamoDB Metadata Entry
 
 ---
 
-⚙️ Troubleshooting
+## ⚙️ Troubleshooting
 
 Common issues and quick fixes:
 
@@ -184,11 +184,11 @@ No logs visible
 ✅ Enable CloudWatch Logs in Lambda configuration.
 ---
 
-💰 Cost Estimation
+## 💰 Cost Estimation
 
 Approximate cost impacts:
 
-AWS Lambda – Very low (charged by execution time; usually cents per month).
+AWS Lambda – Very low (charged by execution time; usually cents pe##r month).
 
 Amazon S3 – Low (storage + request costs).
 
@@ -197,7 +197,7 @@ Amazon DynamoDB – Low (free tier often sufficient for small workloads).
 CloudWatch Logs – Minimal (based on log volume).
 ---
 
-🚀 Project Setup & Deployment Instructions
+## 🚀 Project Setup & Deployment Instructions
 
 You can deploy this project using either the AWS Console or the AWS CLI.
 
@@ -251,16 +251,16 @@ aws s3api put-bucket-notification-configuration \
   --bucket <source-bucket-name> \
   --notification-configuration file://notification.json
 
-🧾 Summary
+## 🧾 Summary
 
 This serverless pipeline automates image processing and metadata storage without provisioning any servers.
 It demonstrates the power of AWS services — combining S3, Lambda, DynamoDB, and CloudWatch to build scalable, event-driven, and cost-efficient solutions.
 
-✅ Author: Ajara Amadu
-🏢 Role: Associate Cloud Trainer
-📅 Year: 2025
+## ✅ Author: Ajara Amadu
+## 🏢 Role: Associate Cloud Trainer
+## 📅 Year: 2025
 
-✨ Enhancements
+## ✨ Enhancements
 
 Here are some ideas to improve or extend the project:
 
