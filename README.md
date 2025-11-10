@@ -20,7 +20,7 @@ aws s3 mb s3://source-bucket-name
 aws s3 mb s3://destination-bucket-name
 
 
-## 🧠 Step 2: Create DynamoDB Table
+🧠 Step 2: Create DynamoDB Table
 aws dynamodb create-table \
   --table-name ImageMetadata \
   --attribute-definitions AttributeName=ImageID,AttributeType=S \
@@ -90,14 +90,14 @@ You can download a Python 3.11 compatible Pillow layer from:
 https://github.com/keithrozario/Klayers
 ---
 
-## Step 5: Environment Variables Added
+⚙️ Step 5: Environment Variables Added
 
 aws lambda update-function-configuration \
   --function-name ImageResizer \
   --environment "Variables={DEST_BUCKET=<destination-bucket-name>}"
 ---
 
-🔐 Step 5: IAM Permissions
+🔐 Step 6: IAM Permissions
 
 Assign permissions that allow the Lambda function to read and write to S3 and put items in DynamoDB.
 
