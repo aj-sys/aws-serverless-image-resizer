@@ -260,6 +260,26 @@ It demonstrates the power of AWS services — combining S3, Lambda, DynamoDB, an
 🏢 Role: Associate Cloud Trainer
 📅 Year: 2025
 
+✨ Enhancements
+
+Here are some ideas to improve or extend the project:
+
+Add Multiple Resize Options: Generate various image sizes (thumbnail, medium, large).
+
+Integrate API Gateway: Allow users to trigger resizing via HTTP API instead of S3 upload only.
+
+Add SNS Notifications: Notify users when images are successfully resized.
+
+Enable CloudFront Caching: Speed up access to resized images.
+
+Add Rekognition Integration: Automatically detect and tag image content before saving metadata.
+
+Use AWS Step Functions: Manage complex workflows (resize, store metadata, send notifications).
+
+Add Error Handling & Logging: Store error details in DynamoDB for better monitoring.
+
+Deploy with AWS SAM or CDK: Automate deployment using Infrastructure as Code.
+
 
 
 
