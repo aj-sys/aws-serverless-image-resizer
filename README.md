@@ -237,18 +237,18 @@ It combines S3, Lambda, DynamoDB, and CloudWatch for scalable, event-driven, and
 
 ## ✨ Enhancements
 
-Generate multiple image sizes
+- Generate multiple image sizes
 
-Integrate API Gateway to trigger resizing via HTTP
+- Integrate API Gateway to trigger resizing via HTTP
 
-Add SNS notifications
+- Add SNS notifications
 
-Enable CloudFront caching
+- Enable CloudFront caching
 
-Add Rekognition integration
+- Add Rekognition integration
 
-Use AWS Step Functions
+- Use AWS Step Functions
 
-Add error handling & logging
+- Add error handling & logging
 
-Deploy using AWS SAM or CDK
+- Deploy using AWS SAM or CDK
