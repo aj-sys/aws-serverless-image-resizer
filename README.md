@@ -1,26 +1,30 @@
 # 🖼️ AWS Lambda Image Resizer with Metadata Storage
 
-This project implements a **serverless image processing pipeline** using **AWS Lambda**, **Amazon S3**, and **DynamoDB**.  
+## Description:
+This project implements a serverless image processing pipeline using AWS Lambda, Amazon S3, and DynamoDB.
 When an image is uploaded to the source S3 bucket, the Lambda function automatically resizes it and stores the output in a destination bucket. Metadata such as file name, size, and format are also recorded in DynamoDB.
-
----
 
 ## 🏗️ Architecture Overview
 
-![architectural-diagram](screenshots/architectural-diagram.png)
+![Architectural Diagram ](screenshots/architectural-diagram.png)
 
----
-
-## 🪣 Step 1: Create Source and Destination Buckets
+### 🪣 Step 1: Create Source and Destination Buckets
 
 Create two S3 buckets — one for uploading original images and one for storing resized versions.
 
-```bash
+### Commands:
+
 aws s3 mb s3://source-bucket-name
 aws s3 mb s3://destination-bucket-name
 
+![Source-Destination Buckets ](screenshots/source-destination-buckets.png)
 
-## 🧠 Step 2: Create DynamoDB Table
+### 🧠 Step 2: Create DynamoDB Table
+
+Create a DynamoDB table named ImageMetadata to store image metadata.
+
+Commands:
+
 aws dynamodb create-table \
   --table-name ImageMetadata \
   --attribute-definitions AttributeName=ImageID,AttributeType=S \
@@ -28,13 +32,13 @@ aws dynamodb create-table \
   --billing-mode PAY_PER_REQUEST
 
 
-![DynamoDB Table](screenshots/dynamodb-table-created.png)
+![DynamoDB Table ](screenshots/dynamodb-table-created.png)
 
----
+### 🧩 Step 3: Lambda Function Code
 
-## 🧩 Step 3: Lambda Function Code
+Below is the Lambda function used to resize images and store metadata in DynamoDB.
 
-Below is the Lambda function used to resize the image and store metadata in DynamoDB.
+Code (Python):
 
 import boto3
 import os
@@ -73,42 +77,34 @@ def lambda_handler(event, context):
     return {'status': 'success', 'resized_image': resized_key}
 
 
- ![Lambda Function](screenshots/lambda-function-code.png)
+![Lambda Function Code ](screenshots/lambda-function-code.png)
 
+### 🧱 Step 4: Add AWS Precompiled Pillow Layer
 
-## 🧱 Step 4: Add AWS Precompiled Pillow Layer
+Attach an AWS precompiled Pillow layer compatible with your Lambda runtime.
 
-To handle image resizing, attach an AWS precompiled Pillow layer compatible with your Lambda runtime (e.g., Python 3.9).
-This ensures that your function has the required dependencies without packaging them manually.
-
-By using precompiled layers (e.g., from Klayers), you save time and avoid compatibility issues since these layers are optimized for AWS Lambda runtimes like Python 3.11 / x86_64.
-
-**Example ARN for the layer in us-east-2:** 
+Example ARN (Python 3.11, us-east-2):
 arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p311-Pillow:10
 
-You can download a Python 3.11 compatible Pillow layer from:
-https://github.com/keithrozario/Klayers
----
+Download layers: Klayers GitHub
 
-## ⚙️ Step 5: Environment Variables Added
+### ⚙️ Step 5: Add Environment Variables
+
+Command:
 
 aws lambda update-function-configuration \
   --function-name ImageResizer \
   --environment "Variables={DEST_BUCKET=<destination-bucket-name>}"
----
 
-## 🔐 Step 6: IAM Permissions
+### 🔐 Step 6: IAM Permissions
 
-Assign permissions that allow the Lambda function to read and write to S3 and put items in DynamoDB.
+Attach permissions allowing Lambda to access S3 and DynamoDB.
 
-The Lambda function requires access to both S3 and DynamoDB.  
+AmazonS3FullAccess
 
-Attached the following policies to the Lambda execution role:  
+AmazonDynamoDBFullAccess
 
-- `AmazonS3FullAccess`  
-- `AmazonDynamoDBFullAccess`
-
-Example least-privilege policy:
+Least-privilege IAM policy example:
 
 {
   "Version": "2012-10-17",
@@ -126,109 +122,76 @@ Example least-privilege policy:
   ]
 }
 
-> You can later replace these with custom, least-privilege policies.
 
+![IAM Permission Policy ](screenshots/iam-permission-policy.png)
 
-![IAM Permission Policy](screenshots/iam-permission-policy.png)
-
----
-
-## 🧪 Step 7: Test the Pipeline
+### 🧪 Step 7: Test the Pipeline
 
 Upload an image to the source bucket.
 
-Wait for the Lambda function to be triggered automatically.
+Wait for Lambda to trigger automatically.
 
 Check the destination bucket for the resized image.
 
-Verify metadata in the DynamoDB table.
+Verify metadata in DynamoDB.
 
-Example Results:
+#### Example Results:
 
-Original Image
-![Original Image Upload](screenshots/original-image-upload.png)
+Original Image: ![Original Image Upload ](screenshots/original-image-upload.png)
+Resized Image: ![Resized Image Upload ](screenshots/resized-image-upload.png)
+DynamoDB Metadata: ![DynamoDB Metadata ](screenshots/image-metadata-in-dynamodb.png)
+View Original Image: ![view original image ](screenshots/view-original-image.png)
+View Resized Image: ![view resized image ](screenshots/view-resized-image.png)
 
-Resized Image
-![Resized Image Upload](screenshots/resized-image-upload.png)
-
-View Original Image in Source Bucket
-![View Original Image](screenshots/view-original-image.png)
-
-View Resized Image in Destination Bucket
-![View Resized Image](screenshots/view-resized-image.png)
-
-
-DynamoDB Metadata Entry
-![Image Metadata in DynamoDB](screenshots/image-metadata-in-dynamodb.png)
-
----
 
 ## ⚙️ Troubleshooting
+## ⚙️ Troubleshooting
 
-Common issues and quick fixes:
+- **Runtime.ImportModuleError**  
+  → Use a precompiled AWS Pillow layer matching your runtime.
 
-Runtime.ImportModuleError: cannot import name '_imaging'
-→ Pillow not installed correctly or missing dependencies.
-✅ Use a precompiled AWS Pillow layer matching your runtime.
+- **Runtime.OutOfMemory**  
+  → Increase Lambda memory allocation to 512–1024 MB.
 
-Runtime.OutOfMemory
-→ Lambda memory too low.
-✅ Increase memory allocation to 512–1024 MB.
+- **Images not appearing in destination bucket**  
+  → Recheck S3 event notifications and Lambda IAM role permissions.
 
-Images not appearing in destination bucket
-→ Event trigger or IAM issue.
-✅ Recheck S3 event notification and Lambda role permissions.
+- **No logs visible**  
+  → Enable CloudWatch Logs in Lambda configuration.
 
-No logs visible
-→ Logging not enabled.
-✅ Enable CloudWatch Logs in Lambda configuration.
----
 
 ## 💰 Cost Estimation
 
-Approximate cost impacts:
+AWS Lambda – Very low (charged by execution time)
 
-AWS Lambda – Very low (charged by execution time; usually cents pe##r month).
+Amazon S3 – Low (storage + requests)
 
-Amazon S3 – Low (storage + request costs).
+Amazon DynamoDB – Low (free tier sufficient)
 
-Amazon DynamoDB – Low (free tier often sufficient for small workloads).
-
-CloudWatch Logs – Minimal (based on log volume).
----
+CloudWatch Logs – Minimal
 
 ## 🚀 Project Setup & Deployment Instructions
 
-You can deploy this project using either the AWS Console or the AWS CLI.
+#### Option 1: AWS Console
 
-Option 1: Deploy via AWS Console
+Create S3 buckets and DynamoDB table
 
-Create S3 buckets and DynamoDB table from the Console.
+Create Lambda function, add code
 
-Go to AWS Lambda → Create function → Author from scratch.
+Add environment variable DEST_BUCKET=<destination-bucket-name>
 
-Choose runtime Python 3.9 (or your preferred version).
+Attach IAM role
 
-Paste your function code in the Code editor.
+Add Pillow layer
 
-Under Configuration → Environment variables, add:
+Configure S3 event trigger
 
-DEST_BUCKET = <your-destination-bucket-name>
+Test by uploading an image
 
-Attach the required IAM role with S3 and DynamoDB permissions.
+#### Option 2: AWS CLI
 
-Add the AWS precompiled Pillow layer ARN.
-
-Configure an S3 event trigger on the source bucket for ObjectCreated events.
-
-Upload an image to the source bucket to test the workflow.
-
-Option 2: Deploy via AWS CLI
-
-Zip your Lambda function:
 zip function.zip lambda_function.py
 
-Create the Lambda function:
 aws lambda create-function \
   --function-name ImageResizer \
   --runtime python3.9 \
@@ -236,53 +199,43 @@ aws lambda create-function \
   --handler lambda_function.lambda_handler \
   --zip-file fileb://function.zip
 
-Add environment variables:
 aws lambda update-function-configuration \
   --function-name ImageResizer \
   --environment "Variables={DEST_BUCKET=<destination-bucket-name>}"
 
-Add Pillow layer:
 aws lambda update-function-configuration \
   --function-name ImageResizer \
   --layers arn:aws:lambda:us-east-2:770693421928:layer:Klayers-p311-Pillow:10
 
-Create S3 trigger for the Lambda function:
 aws s3api put-bucket-notification-configuration \
   --bucket <source-bucket-name> \
   --notification-configuration file://notification.json
 
 ## 🧾 Summary
 
-This serverless pipeline automates image processing and metadata storage without provisioning any servers.
-It demonstrates the power of AWS services — combining S3, Lambda, DynamoDB, and CloudWatch to build scalable, event-driven, and cost-efficient solutions.
+This serverless pipeline automates image processing and metadata storage without provisioning servers.
+It combines S3, Lambda, DynamoDB, and CloudWatch for scalable, event-driven, and cost-efficient solutions.
 
-## ✅ Author: Ajara Amadu
-## 🏢 Role: Associate Cloud Trainer
-## 📅 Year: 2025
+## ✅ Author
+
+### Ajara Amadu
+### Role: Associate Cloud Trainer
+### Year: 2025
 
 ## ✨ Enhancements
 
-Here are some ideas to improve or extend the project:
+Generate multiple image sizes
 
-Add Multiple Resize Options: Generate various image sizes (thumbnail, medium, large).
+Integrate API Gateway to trigger resizing via HTTP
 
-Integrate API Gateway: Allow users to trigger resizing via HTTP API instead of S3 upload only.
+Add SNS notifications
 
-Add SNS Notifications: Notify users when images are successfully resized.
+Enable CloudFront caching
 
-Enable CloudFront Caching: Speed up access to resized images.
+Add Rekognition integration
 
-Add Rekognition Integration: Automatically detect and tag image content before saving metadata.
+Use AWS Step Functions
 
-Use AWS Step Functions: Manage complex workflows (resize, store metadata, send notifications).
+Add error handling & logging
 
-Add Error Handling & Logging: Store error details in DynamoDB for better monitoring.
-
-Deploy with AWS SAM or CDK: Automate deployment using Infrastructure as Code.
-
-
-
-
-
-
-
+Deploy using AWS SAM or CDK
