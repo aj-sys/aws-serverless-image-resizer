@@ -137,15 +137,20 @@ Verify metadata in DynamoDB.
 
 #### Example Results:
 
-- Original Image: ![Original Image Upload ](screenshots/original-image-upload.png)
+- Original Image 
+ ![Original Image Upload ](screenshots/original-image-upload.png)
   
-- Resized Image: ![Resized Image Upload ](screenshots/resized-image-upload.png)
+- Resized Image
+ ![Resized Image Upload ](screenshots/resized-image-upload.png)
   
-- DynamoDB Metadata: ![DynamoDB Metadata ](screenshots/image-metadata-in-dynamodb.png)
+- DynamoDB Metadata
+![DynamoDB Metadata ](screenshots/image-metadata-in-dynamodb.png)
   
-- View Original Image: ![view original image ](screenshots/view-original-image.png)
+- View Original Image
+ ![view original image ](screenshots/view-original-image.png)
   
-- View Resized Image: ![view resized image ](screenshots/view-resized-image.png)
+- View Resized Image
+ ![view resized image ](screenshots/view-resized-image.png)
 
 
 ## ⚙️ Troubleshooting
